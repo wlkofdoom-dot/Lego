@@ -1,0 +1,86 @@
+#filter
+
+services:
+  
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.100
+    ports:
+      - 80:80    # Standard HTTP (Redirects to HTTPS)
+      - 443:443  # Secure HTTPS Traffic
+      - 81:81    # Web Admin UI
+    environment:
+      - TZ=America/New_York
+      - DISABLE_IPV6=true           # Prevents unneeded IPv6 binding errors
+    volumes:
+      - /wlkofdoom/appdata/npm/data:/data
+      - /wlkofdoom/appdata/npm/letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+
+  unbound:
+    image: mvance/unbound:latest
+    container_name: unbound
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.101
+    environment:
+      - TZ=America/New_York
+    restart: unless-stopped
+
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    depends_on:
+      - unbound
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.102
+    environment:
+      - TZ=America/New_York
+      - FTLCONF_webserver_api_password=
+      - FTLCONF_dns_upstreams=192.168.1.101#5335
+    volumes:
+      - /wlkofdoom/appdata/pihole/config:/etc/pihole
+      - /wlkofdoom/appdata/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    restart: unless-stopped
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=America/New_York
+    ports:
+      - 8191:8191
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.230
+      macvlan-net-b:
+        ipv4_address: 10.0.0.230
+    restart: unless-stopped      
+
+  byparr:
+    image: ghcr.io/thephaseless/byparr:latest
+    container_name: byparr
+    restart: unless-stopped
+    init: true
+    environment:
+      - LOG_LEVEL=INFO
+    ports:
+      - 8191:8191
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.222
+      macvlan-net-b:
+        ipv4_address: 10.0.0.222
+
+networks:
+  macvlan-net-b:
+    external: true
+  macvlan-net-a:
+    external: true
