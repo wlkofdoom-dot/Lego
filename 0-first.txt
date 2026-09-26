@@ -1,0 +1,82 @@
+#!/bin/bash
+
+sudo apt update && sudo apt upgrade -y
+sudo apt autoremove -y
+
+# --- CONFIGURATION VARIABLES ---
+# Change this number if you want a different custom port
+SSH_PORT=2111
+SSH_CONFIG="/etc/ssh/sshd_config"
+
+echo "=== Starting System Update and Upgrade ==="
+sudo apt update && sudo apt upgrade -y
+sudo apt autoremove -y
+
+echo "=== Installing and Enrolling OpenSSH Server ==="
+sudo apt install -y openssh-server
+sudo systemctl enable --now ssh
+
+echo "=== Backing up SSH Configuration ==="
+sudo cp "$SSH_CONFIG" "${SSH_CONFIG}.bak"
+
+echo "=== Modifying SSH Rules (Automated Edit) ==="
+# Fixes your broken sed lines and ensures variables map correctly
+sudo sed -i "s/^#\?Port .*/Port ${SSH_PORT}/" "$SSH_CONFIG"
+sudo sed -i "s/^#\?PermitRootLogin .*/PermitRootLogin no/" "$SSH_CONFIG"
+sudo sed -i "s/^#\?MaxAuthTries .*/MaxAuthTries 3/" "$SSH_CONFIG"
+sudo sed -i "s/^#\?PasswordAuthentication .*/PasswordAuthentication yes/" "$SSH_CONFIG"
+sudo sed -i "s/^#\?PermitEmptyPasswords .*/PermitEmptyPasswords no/" "$SSH_CONFIG"
+
+echo "=== Configuring Firewall ==="
+# Block default port, open your new custom port, and turn firewall on
+sudo ufw allow ${SSH_PORT}/tcp
+sudo ufw deny 22/tcp || true
+sudo ufw --force enable
+
+echo "=== Reloading SSH Daemons ==="
+sudo systemctl daemon-reload
+sudo systemctl restart ssh || sudo systemctl restart ssh.socket
+
+echo "=== Verification ==="
+sudo ufw status verbose
+echo "SSH is now configured to listen on port ${SSH_PORT}."
+echo "Your system will now reboot in 5 seconds. Remember to reconnect using: ssh -p ${SSH_PORT} user@ip"
+sleep 5
+
+sudo reboot
+
+
+
+
+
+
+#!/bin/bash
+
+
+# 1. Update package index and install prerequisites
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+
+# 2. Add Docker's official GPG key
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# 3. Set up the official repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 4. Update index again and install the official Docker packages (APT native, NO SNAP)
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 5. Enable Docker to auto-start on boot
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+
+# 6. Automatically add your current user to the docker group
+sudo usermod -aG docker $USER
+
+
