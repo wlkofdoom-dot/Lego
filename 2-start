@@ -1,0 +1,39 @@
+docker compose up
+
+
+#Load container
+#Unload
+#Edit container change name to inception and update ip to 239
+#Load container
+
+
+services:
+  portainer:
+    image: portainer/portainer-ce
+    container_name: inception
+    restart: unless-stopped
+    ports:
+      - 9443:9443
+      - 9000:9000
+    volumes:
+      - /wlkofdoom/appdata/inception/data:/data
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/backup/backups/arrr:/backup
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/localtime:/etc/localtime:ro
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.239
+      macvlan-net-b:
+        ipv4_address: 10.0.0.239
+
+networks:
+  macvlan-net-a:
+    external: true
+  macvlan-net-b:
+    external: true
+
+
+#Load system stack
+#Enter system stack
