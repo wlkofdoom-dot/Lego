@@ -1,0 +1,66 @@
+#clone your drive
+
+
+#you're not going to read You're a fucking You just wasted 4 hours trying to fix this problem and it's been right here right fucking.
+
+
+#Load all stacks
+
+sudo chown -R 1000:1000 /wlkofdoom/appdata/seerr
+
+sudo reboot
+
+
+
+
+
+#!/bin/bash
+
+# STEP 1: Create the file with the template (No dots)
+# This fulfills the "Superstition" of having it exist first.
+sudo bash -c 'cat > /root/smbcred <<EOF
+username=
+password=
+EOF'
+
+# STEP 2: Update and Install
+sudo apt update && sudo apt upgrade -y
+sudo apt autoremove -y
+sudo apt install cifs-utils -y
+
+# STEP 3: Set permissions on the cred file
+sudo chown -R root:wlkofdoom /root/smbcred 
+sudo chmod 775 /root/smbcred
+
+# STEP 4: Create Directories
+sudo mkdir -p /mnt/doomed/
+sudo mkdir /mnt/doomed/tv
+sudo mkdir /mnt/doomed/np
+sudo mkdir /mnt/doomed/film
+sudo mkdir /mnt/doomed/standup
+sudo mkdir /mnt/doomed/books
+sudo mkdir /mnt/doomed/franchises
+sudo mkdir /mnt/doomed/music
+sudo mkdir /mnt/doomed/backup
+sudo mkdir /mnt/doomed/downloads
+
+
+sudo chmod -R 775 /mnt/doomed
+
+
+# STEP 7: Append exact fstab lines
+sudo bash -c 'cat >> /etc/fstab <<EOF
+
+//192.168.1.50/tv           /mnt/doomed/tv           cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/standup      /mnt/doomed/Standup      cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/np           /mnt/doomed/np           cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/music        /mnt/doomed/music        cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/franchises   /mnt/doomed/Franchises   cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/film         /mnt/doomed/film         cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/books        /mnt/doomed/Books        cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/backup       /mnt/doomed/backup       cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+//192.168.1.50/downloads    /mnt/doomed/downloads    cifs credentials=/root/smbcred,uid=1000,gid=1000,iocharset=utf8,rw,nofail,_netdev,x-systemd.automount 0 0
+EOF'
+
+
+sudo reboot
