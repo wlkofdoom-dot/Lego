@@ -1,0 +1,46 @@
+sudo docker network create -d macvlan \
+  --subnet=192.168.1.0/24 \
+  --gateway=192.168.1.1 \
+  --ip-range=192.168.1.200/28 \
+  -o parent=eth0 \
+  macvlan-net-a
+
+sudo docker network create -d macvlan \
+  --subnet=10.0.0.0/24 \
+  --gateway=10.0.0.1 \
+  --ip-range=10.0.0.200/28 \
+  -o parent=eth1 \
+  macvlan-net-b
+
+sudo reboot
+
+sudo nano compose.yaml
+
+services:
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - 9443:9443
+      - 9000:9000
+    volumes:
+      - /wlkofdoom/appdata/portainer/data:/data
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/backup/backups/arrr:/backup
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.250
+      macvlan-net-b:
+        ipv4_address: 10.0.0.250
+
+networks:
+  macvlan-net-a:
+    external: true
+  macvlan-net-b:
+    external: true
+
+sudo reboot
