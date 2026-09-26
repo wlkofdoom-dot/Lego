@@ -1,32 +1,30 @@
-# Lego: Modular Docker Homelab Setup
+# Lego: My Personal Docker Setup
 
-This repository contains my personal, evolving Docker configuration stack. My goal with this project is to perfect a modular, friction-free deployment that I can stand up on any host system at a moment's notice.
-
-I am sharing my setup and progress publicly so others can draw inspiration, adapt individual stacks, or replicate the environment.
+This is my personal Docker setup, which I am trying to perfect so that I can deploy it on any system at any time with zero friction. I thought I'd share my progress for anyone else who wants a simple, working setup without dealing with endless technical headaches.
 
 ---
 
-## 🛠️ How to Use This Setup
+## 🛠️ How to Use This
 
-If you want to deploy or test this configuration, **you must execute the steps in numerical order from `0` to `10`**. Each file builds on the storage structures, network interfaces, and container dependencies created in the preceding steps.
+If you want to try this setup on your own computer, **you must follow the steps in order, going from 0 to 10**. Each step relies on the previous ones to work properly.
 
-1. **Prerequisites & Scripts:** Run the system initialization and SMB mount scripts first to establish host paths and credentials.
-2. **Network Creation:** Initialize the core MacVLAN networks (`macvlan-net-a` and `macvlan-net-b`) before spinning up any compose stacks.
-3. **Container Stacks:** Bring up the stacks sequentially as numbered (Management, Filtering, Media, Downloaders, Utilities).
-
----
-
-## 🔒 Security & Sanitization Note
-
-To safely publish this project publicly, **all network names, static IP addresses, subnets, and sensitive credentials have been scrubbed and sanitized using AI**. 
-
-Before deploying this on your own machine:
-* Update the MacVLAN subnet and gateway configurations in Step 1 to match your physical network adapter and IP scheme.
-* Provide your own SMB credentials in `/root/smbcred`.
-* Adjust volume paths if your host storage mount points differ from the defaults.
+1. **Run the setup scripts (0 - 1):** These prepare your system and set up storage folder paths.
+2. **Set up network connections:** These let your apps talk to each other and your local network.
+3. **Launch your apps (2 - 10):** Turn on each group of apps one by one in numerical order.
 
 ---
 
-## 📄 License & Usage
+## 🔒 Personal Information Cleared
 
-Feel free to fork, adapt, or copy any part of these stacks for your own homelab setup.
+I used AI to scrub and sanitize personal network names, private passwords, and specific IP addresses from all of these files so they are safe to share publicly. 
+
+If you use this setup yourself:
+* Update the IP addresses in Step 1 to match your own home network.
+* Put your own passwords into the login files.
+* Adjust folder locations if your hard drives use different names.
+
+---
+
+## 📄 Feel Free to Use
+
+You are welcome to copy, borrow, or tweak any part of this setup for your own computer.
