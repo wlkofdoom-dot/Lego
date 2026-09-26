@@ -1,0 +1,66 @@
+# System
+
+services:
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - 9443:9443
+      - 9000:9000
+    volumes:
+      - /wlkofdoom/appdata/portainer/data:/data
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/backup/backups/arrr:/backup
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/localtime:/etc/localtime:ro
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.95
+      macvlan-net-b:
+        ipv4_address: 10.0.0.95
+
+  watchtower:
+    image: nickfedor/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /wlkofdoom/appdata/watchtower/config:/app/config
+      - /mnt/doomed/backup/backups/arrr:/backup
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.94
+      macvlan-net-b:
+        ipv4_address: 10.0.0.94
+
+  dockge:
+    image: louislam/dockge
+    container_name: dockge
+    restart: unless-stopped
+    ports:
+      - 5001:5001
+    volumes:
+      - /wlkofdoom/appdata/dockge/config:/app/config
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/backup/backups/arrr:/backup
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /wlkofdoom/appdata/dockge/data:/app/data
+      - /mnt/doomed/backup/backups/compose:/data/compose
+    environment:
+      - DOCKGE_STACKS_DIR=/data/compose
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.93
+      macvlan-net-b:
+        ipv4_address: 10.0.0.93
+
+networks:
+  macvlan-net-a:
+    external: true
+  macvlan-net-b:
+    external: true
