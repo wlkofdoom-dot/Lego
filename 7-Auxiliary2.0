@@ -1,0 +1,78 @@
+services:
+
+  tautulli:
+    image: lscr.io/linuxserver/tautulli
+    container_name: tautulli
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.231
+      macvlan-net-b:
+        ipv4_address: 10.0.0.231
+    volumes:
+      - /wlkofdoom/appdata/tautulli/config:/config
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/tv:/tv
+      - /mnt/doomed/film:/movies
+      - /mnt/doomed/music:/music
+      - /mnt/doomed/backup/backups/arrr:/backup
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+
+  organizr:
+    image: organizr/organizr
+    container_name: organizr
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.92
+      macvlan-net-b:
+        ipv4_address: 10.0.0.92
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /wlkofdoom/appdata/organizr/config:/config
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/tv:/tv
+      - /mnt/doomed/film:/movies
+      - /mnt/doomed/music:/music
+      - /mnt/doomed/backup/backups/arrr:/backup
+    ports:
+      - 9380:80
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    networks:
+      macvlan-net-a:
+        ipv4_address: 192.168.1.232
+      macvlan-net-b:
+        ipv4_address: 10.0.0.232
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - WEBUI_PORT=8081
+      - TZ=America/New_York
+    volumes:
+      - /wlkofdoom/appdata/qbittorrent/config:/config
+      - /mnt/doomed/downloads:/downloads
+      - /mnt/doomed:/doomed
+      - /mnt/doomed/tv:/tv
+      - /mnt/doomed/film:/movies
+      - /mnt/doomed/music:/music
+      - /mnt/doomed/backup/backups/arrr:/backup
+    restart: unless-stopped
+
+networks:
+  macvlan-net-a:
+    external: true
+  macvlan-net-b:
+    external: true
