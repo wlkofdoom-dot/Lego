@@ -1,3 +1,8 @@
+sudo nano compose.yaml
+
+
+
+
 # System
 
 services:
@@ -64,3 +69,13 @@ networks:
     external: true
   macvlan-net-b:
     external: true
+
+
+
+
+
+docker compose up
+
+#Enter port tainer.
+#Add the rest of the templates.
+#Implement the templates you want to use.
